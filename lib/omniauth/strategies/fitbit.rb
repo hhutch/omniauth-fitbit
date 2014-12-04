@@ -5,6 +5,8 @@ module OmniAuth
   module Strategies
     class Fitbit < OmniAuth::Strategies::OAuth
 
+      DEFAULT_DISPLAY = "touch"
+      
       option :name, "fitbit"
 
       option :client_options, {
@@ -55,7 +57,7 @@ module OmniAuth
       # You can pass +display+, +scope+, or +auth_type+ params to the auth request, if you need to set them dynamically.
       # You can also set these options in the OmniAuth config :authorize_params option.
       #
-      # For example: /auth/facebook?display=popup
+      # For example: /auth/fitbit?display=popup
       def authorize_params
         super.tap do |params|
           %w[display scope auth_type].each do |v|
@@ -64,7 +66,7 @@ module OmniAuth
             end
           end
 
-          params[:scope] ||= DEFAULT_SCOPE
+          params[:display] ||= DEFAULT_DISPLAY
         end
       end
       
