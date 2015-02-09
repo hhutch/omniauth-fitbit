@@ -5,6 +5,8 @@ module OmniAuth
   module Strategies
     class Fitbit < OmniAuth::Strategies::OAuth
 
+
+      MOBILE_USER_AGENTS =  'webos|ipod|iphone|mobile'
       DEFAULT_DISPLAY = "touch"
       
       option :name, "fitbit"
@@ -54,20 +56,14 @@ module OmniAuth
         end
       end
 
-      # You can pass +display+, +scope+, or +auth_type+ params to the auth request, if you need to set them dynamically.
-      # You can also set these options in the OmniAuth config :authorize_params option.
-      #
-      # For example: /auth/fitbit?display=popup
-      def authorize_params
-        super.tap do |params|
-          %w[display scope auth_type].each do |v|
-            if request.params[v]
-              params[v.to_sym] = request.params[v]
-            end
-          end
+      def request_phase
+        options[:authorize_params][:display] = mobile_request? ? 'touch' : 'page'
+        super
+      end
 
-          params[:display] ||= DEFAULT_DISPLAY
-        end
+      def mobile_request?
+        ua = Rack::Request.new(@env).user_agent.to_s
+        ua.downcase =~ Regexp.new(MOBILE_USER_AGENTS)
       end
       
     end
